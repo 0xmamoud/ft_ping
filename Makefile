@@ -10,7 +10,7 @@ SRC_DIR		= src
 OBJ_DIR		= obj
 INC_DIR		= includes
 
-SRCS		= main.c
+SRCS		= main.c ping.c network.c icmp.c stats.c
 
 # Object files
 OBJS		= $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
