@@ -1,0 +1,10 @@
+.git
+.gitignore
+*.o
+obj/
+ft_ping
+*.tar.gz
+.DS_Store
+.vscode
+*.swp
+*.swo

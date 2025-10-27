@@ -1,0 +1,14 @@
+services:
+  ft_ping:
+    build: .
+    container_name: ft_ping
+    volumes:
+      - .:/ft_ping
+    # allow raw sockets
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    stdin_open: true
+    tty: true
+    network_mode: bridge
+    command: /bin/bash
