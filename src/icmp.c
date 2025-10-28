@@ -60,6 +60,9 @@ int receive_ping_packet(t_config *config, int seq_num, t_stats *stats) {
       printf("Request timeout for icmp_seq %d\n", seq_num);
       return -1;
     }
+    if (errno == EINTR) {
+      return -1;
+    }
     perror("recvfrom");
     return -1;
   }

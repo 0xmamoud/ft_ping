@@ -49,11 +49,20 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  printf("PING %s (%s): %d data bytes\n", config.hostname, config.ip_address,
+  int pid = getpid();
+  if (config.verbose) {
+    printf("PING %s (%s): %d data bytes, id 0x%04x = %d\n", config.hostname,
+           config.ip_address, 56, pid & 0xFFFF, pid & 0xFFFF);
+  } else {
+    printf("PING %s (%s): %d data bytes\n", config.hostname, config.ip_address,
+           56);
+  }
 
-         56);
-
-  signal(SIGINT, signal_handler);
+  struct sigaction sa;
+  sa.sa_handler = signal_handler;
+  sa.sa_flags = 0;
+  sigemptyset(&sa.sa_mask);
+  sigaction(SIGINT, &sa, NULL);
 
   while (loop) {
     stats.packets_sent++;
