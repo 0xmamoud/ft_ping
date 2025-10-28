@@ -58,11 +58,7 @@ int main(int argc, char *argv[]) {
            56);
   }
 
-  struct sigaction sa;
-  sa.sa_handler = signal_handler;
-  sa.sa_flags = 0;
-  sigemptyset(&sa.sa_mask);
-  sigaction(SIGINT, &sa, NULL);
+  signal(SIGINT, signal_handler);
 
   while (loop) {
     stats.packets_sent++;

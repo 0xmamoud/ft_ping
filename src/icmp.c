@@ -46,6 +46,7 @@ int send_ping_packet(t_config *config, int seq_num) {
 }
 
 int receive_ping_packet(t_config *config, int seq_num, t_stats *stats) {
+  (void)seq_num;
   char buffer[1024];
   struct sockaddr_in recv_addr;
   socklen_t addr_len = sizeof(recv_addr);
@@ -55,17 +56,8 @@ int receive_ping_packet(t_config *config, int seq_num, t_stats *stats) {
   bytes_received = recvfrom(config->sockfd, buffer, sizeof(buffer), 0,
                             (struct sockaddr *)&recv_addr, &addr_len);
 
-  if (bytes_received < 0) {
-    if (errno == EAGAIN || errno == EWOULDBLOCK) {
-      printf("Request timeout for icmp_seq %d\n", seq_num);
-      return -1;
-    }
-    if (errno == EINTR) {
-      return -1;
-    }
-    perror("recvfrom");
+  if (bytes_received < 0)
     return -1;
-  }
 
   gettimeofday(&tv_now, NULL);
 
@@ -75,48 +67,8 @@ int receive_ping_packet(t_config *config, int seq_num, t_stats *stats) {
 
   if (icmp_hdr->icmp_type != ICMP_ECHOREPLY) {
     if (config->verbose) {
-      // Afficher le message d'erreur selon le type
-      switch (icmp_hdr->icmp_type) {
-      case ICMP_TIMXCEED: // ICMP_TIME_EXCEEDED (11 )
-        printf("%ld bytes from %s: Time to live exceeded\n",
-               bytes_received - ip_hdr_len, inet_ntoa(recv_addr.sin_addr));
-        break;
-      case ICMP_UNREACH: // ICMP_DEST_UNREACH (3)
-        printf("%ld bytes from %s: Destination unreachable\n",
-               bytes_received - ip_hdr_len, inet_ntoa(recv_addr.sin_addr));
-        break;
-      default:
-        printf("%ld bytes from %s: ICMP type %d\n", bytes_received - ip_hdr_len,
-               inet_ntoa(recv_addr.sin_addr), icmp_hdr->icmp_type);
-        break;
-      }
-
-      printf("IP Hdr Dump:\n ");
-      unsigned char *ip_bytes = (unsigned char *)ip_hdr;
-      for (int i = 0; i < ip_hdr_len; i++) {
-        printf("%02x", ip_bytes[i]);
-        if (i % 2 == 1)
-          printf(" ");
-      }
-      printf("\n");
-
-      struct in_addr src, dst;
-      src.s_addr = ip_hdr->ip_src.s_addr;
-      dst.s_addr = ip_hdr->ip_dst.s_addr;
-
-      printf("Vr HL TOS  Len   ID Flg  off TTL Pro  cks      Src    Dst    "
-             "Data\n");
-      printf(" %d  %d  %02x %04x %04x   %d %04x  %02x  %02x %04x %s  %s\n",
-             ip_hdr->ip_v, ip_hdr->ip_hl, ip_hdr->ip_tos, ntohs(ip_hdr->ip_len),
-             ntohs(ip_hdr->ip_id), (ntohs(ip_hdr->ip_off) & 0x4000) >> 14,
-             ntohs(ip_hdr->ip_off) & 0x1fff, ip_hdr->ip_ttl, ip_hdr->ip_p,
-             ntohs(ip_hdr->ip_sum), inet_ntoa(src), inet_ntoa(dst));
-
-      struct icmp *orig_icmp = (struct icmp *)(buffer + ip_hdr_len + 8);
-      printf("ICMP: type %d, code %d, size %ld, id 0x%04x, seq 0x%04x\n",
-             orig_icmp->icmp_type, orig_icmp->icmp_code,
-             bytes_received - ip_hdr_len - 8, ntohs(orig_icmp->icmp_id),
-             ntohs(orig_icmp->icmp_seq));
+      print_verbose_icmp_error(icmp_hdr, ip_hdr, bytes_received, ip_hdr_len,
+                               &recv_addr, buffer);
     }
     return -1;
   }
@@ -136,5 +88,6 @@ int receive_ping_packet(t_config *config, int seq_num, t_stats *stats) {
   printf("%ld bytes from %s: icmp_seq=%d ttl=%d time=%.3f ms\n",
          bytes_received - ip_hdr_len, inet_ntoa(recv_addr.sin_addr),
          ntohs(icmp_hdr->icmp_seq), ip_hdr->ip_ttl, rtt);
+
   return 0;
 }

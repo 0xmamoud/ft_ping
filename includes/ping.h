@@ -56,5 +56,8 @@ bool is_valid_args(int argc, char **argv);
 char *get_hostname(int argc, char **argv);
 
 void print_help(void);
+void print_verbose_icmp_error(struct icmp *icmp_hdr, struct ip *ip_hdr,
+                              ssize_t bytes_received, int ip_hdr_len,
+                              struct sockaddr_in *recv_addr, char *buffer);
 
 #endif
