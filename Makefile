@@ -25,7 +25,7 @@ all: $(NAME)
 
 $(NAME): $(OBJS)
 	@echo "$(GREEN)Linking $(NAME)...$(RESET)"
-	@$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
+	@$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -lm
 	@echo "$(GREEN) $(NAME) created successfully$(RESET)"
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c

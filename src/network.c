@@ -17,8 +17,8 @@ int get_addr(const char *hostname, t_config *config) {
 
   addr_in = (struct sockaddr_in *)res->ai_addr;
 
-  strncpy(config->hostname, hostname, 255);
-  config->hostname[255] = '\0';
+  strncpy(config->hostname, hostname, sizeof(config->hostname) - 1);
+  config->hostname[sizeof(config->hostname) - 1] = '\0';
 
   inet_ntop(AF_INET, &addr_in->sin_addr, config->ip_address, INET_ADDRSTRLEN);
 

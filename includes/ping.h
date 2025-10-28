@@ -3,6 +3,7 @@
 
 #include <arpa/inet.h>
 #include <errno.h>
+#include <math.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/ip_icmp.h>
@@ -36,9 +37,11 @@ typedef struct s_stats {
   int packets_sent;
   int packets_received;
   double sum_rtt;
+  double sum_rtt_squared;
   double min_rtt;
   double max_rtt;
   double avg_rtt;
+  double stddev_rtt;
 } t_stats;
 
 unsigned int icmp_checksum(void *data, int len);
