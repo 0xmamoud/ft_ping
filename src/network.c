@@ -47,5 +47,12 @@ int create_socket() {
     return -1;
   }
 
+  // Configure TTL (Time To Live)
+  // int ttl = 1;
+  // if (setsockopt(sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(ttl)) == -1) {
+  //   perror("setsockopt TTL");
+  //   return -1;
+  // }
+
   return sockfd;
 }
