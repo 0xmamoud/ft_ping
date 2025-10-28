@@ -1,9 +1,10 @@
 #include "../includes/ping.h"
+#include <string.h>
 
 int loop = 1;
 
 void signal_handler(int signum) {
-  (void)signum; // Éviter warning unused parameter
+  (void)signum;
   loop = 0;
 }
 
@@ -12,13 +13,30 @@ int main(int argc, char *argv[]) {
   t_stats stats = {0};
   int seq_num = 0;
 
-  if (argc < 2) {
-    printf("Ping: missing operand\n");
+  if (argc < 2 || argc > 4) {
+    printf("ft_ping: missing operand\n");
     printf("Try 'ping -?' for more information\n");
     return 1;
   }
 
-  if (get_addr(argv[1], &config) != 0) {
+  if (!is_valid_args(argc, argv)) {
+    printf("ft_ping: invalid option\n");
+    printf("Try 'ping -?' for more information\n");
+    return 1;
+  }
+
+  if (is_help(argc, argv)) {
+    print_help();
+    return 0;
+  }
+
+  if (is_verbose(argc, argv)) {
+    config.verbose = true;
+  }
+
+  const char *hostname = get_hostname(argc, argv);
+
+  if (get_addr(hostname, &config) != 0) {
     printf("Ping: invalid hostname\n");
     printf("Try 'ping -?' for more information\n");
     return 1;

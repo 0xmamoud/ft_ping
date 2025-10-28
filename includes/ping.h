@@ -50,4 +50,11 @@ double calculate_rtt(struct timeval *tv_send, struct timeval *tv_recv);
 void update_stats(t_stats *stats, double rtt);
 void print_stats(t_stats *stats, const char *hostname);
 
+bool is_help(int argc, char **argv);
+bool is_verbose(int argc, char **argv);
+bool is_valid_args(int argc, char **argv);
+char *get_hostname(int argc, char **argv);
+
+void print_help(void);
+
 #endif
